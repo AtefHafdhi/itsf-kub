@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-itsf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-risf-init
+  template:
+    metadata:
+      labels:
+        app: hello-risf-init
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+        fsGroup: 1000
+      volumes:
+        - name: html-volume
+          emptyDir: {}
+        - name: config-volume
+          configMap:
+            name: html-content
+        - name: cache-volume
+          emptyDir: {}
+        - name: run-volume
+          emptyDir: {}
+      initContainers:
+        - name: init-html
+          image: busybox
+          command: ['sh', '-c', 'cp /config/index.html /html/index.html']
+          securityContext:
+            runAsUser: 1000
+          volumeMounts:
+            - name: html-volume
+              mountPath: /html
+            - name: config-volume
+              mountPath: /config
+      containers:
+        - name: hello-risf
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: html-volume
+              mountPath: /usr/share/nginx/html
+            - name: cache-volume
+              mountPath: /var/cache/nginx
+            - name: run-volume
+              mountPath: /run

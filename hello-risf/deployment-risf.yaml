@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-risf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-risf
+  template:
+    metadata:
+      labels:
+        app: hello-risf
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsNonRoot: true
+      volumes:
+        - name: run-volume
+          emptyDir: {}
+        - name: cache-volume
+          emptyDir: {}
+      containers:
+        - name: hello-risf
+          image: hello-risf:v1
+          ports:
+            - containerPort: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+          volumeMounts:
+            - name: cache-volume
+              mountPath: /var/cache/nginx
+            - name: run-volume
+              mountPath: /run
