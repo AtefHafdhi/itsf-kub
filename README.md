@@ -152,10 +152,4 @@ sudo nano /etc/hosts
 
 **Atef Hafdhi**  
 DevOps Engineer | Kubernetes | CI/CD | Cloud  
-[LinkedIn](https://linkedin.com/in/atefhafdhi)
 
----
-
-## 📜 License
-
-MIT – Use freely for learning, testing, and demonstration.
